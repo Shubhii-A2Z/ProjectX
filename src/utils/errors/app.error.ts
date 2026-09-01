@@ -1,39 +1,30 @@
 import { StatusCodes } from "http-status-codes";
 
-// AppError interface extends everything from Error (name,message) + extra
-export interface AppError extends Error{
+// AppError class extends everything from Error (name,message) + extra
+export class AppError extends Error {
     statusCode: number;
-}
 
-export class InternalServerError implements AppError{
-    name: string;
-    statusCode: number;
-    message: string;
-    constructor(message: string){
-        this.name="InternalServerError"
-        this.statusCode=StatusCodes.INTERNAL_SERVER_ERROR;
-        this.message=message;
+    constructor(message: string, statusCode: number) {
+        super(message);
+        this.name = this.constructor.name;
+        this.statusCode = statusCode;
     }
 }
 
-export class NotFoundError implements AppError{
-    name: string;
-    statusCode: number;
-    message: string;
+export class InternalServerError extends AppError{
     constructor(message: string){
-        this.name="NotFoundError"
-        this.statusCode=StatusCodes.NOT_FOUND;
-        this.message=message;
+        super(message, StatusCodes.INTERNAL_SERVER_ERROR);
     }
 }
 
-export class UnauthorizedAccess implements AppError{
-    name: string;
-    statusCode: number;
-    message: string;
+export class NotFoundError extends AppError{
     constructor(message: string){
-        this.name="UnauthorizedAccess"
-        this.statusCode=StatusCodes.UNAUTHORIZED;
-        this.message=message;
+        super(message, StatusCodes.NOT_FOUND);
+    }
+}
+
+export class UnauthorizedAccess extends AppError{
+    constructor(message: string){
+        super(message, StatusCodes.UNAUTHORIZED);
     }
 }
