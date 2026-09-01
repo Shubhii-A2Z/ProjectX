@@ -1,4 +1,4 @@
-# Relay Backend — Prisma Setup
+# ProjectX Backend — Prisma Setup
 
 This project uses **Prisma 6.19.0** with **PostgreSQL (Neon)**.
 
