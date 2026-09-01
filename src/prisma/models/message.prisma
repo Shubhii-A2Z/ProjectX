@@ -1,0 +1,10 @@
+model Message{
+    id          Int     @id @default(autoincrement()) @map("_id")
+    body        String
+
+    channelId   Int
+    channel     Channel @relation(fields: [channelId], references: [id])
+
+    senderId    Int
+    sender      User    @relation(fields: [senderId], references: [id])
+}

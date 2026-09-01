@@ -1,0 +1,10 @@
+model Channel{
+    id          Int     @id @default(autoincrement()) @map("_id")
+    name        String
+
+    messageId   Int[]
+    message     Message[]
+
+    workspaceId Int[]
+    workspace   WorkSpace[]
+}

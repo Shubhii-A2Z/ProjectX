@@ -4,4 +4,10 @@ model User{
     email       String  @unique
     password    String
     avatar      String?
+
+    sentMessageId   Int[]
+    sentMessage     Message[]
+
+    joinedWorkspaceId Int[]
+    joinedWorkspace   WorkSpace[]
 }
