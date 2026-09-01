@@ -3,6 +3,10 @@ import bcrypt from 'bcrypt';
 import { UserService } from "../user.service.interface";
 import { User } from "@prisma/client";
 import { UserRepository } from "@/repositories/user.repository.interface";
+import { CreateUserDTO } from '@/dtos/CreateUserDTO';
+import { NotFoundError, UnauthorizedAccess } from '@/utils/errors/app.error';
+import { JWTToken } from '@/utils/common/auth.util';
+import { SignInUserDTO } from '@/dtos/SignInUserDTO';
 
 export class UserServiceImpl implements UserService{
     
@@ -22,7 +26,7 @@ export class UserServiceImpl implements UserService{
         return users;
     }
 
-    async create(data: any): Promise<User | null> {
+    async create(data: CreateUserDTO): Promise<User | null> {
         const salt=bcrypt.genSaltSync(10);
         const hashedPassword=bcrypt.hashSync(data.password, salt);
         data.password=hashedPassword;
@@ -39,9 +43,24 @@ export class UserServiceImpl implements UserService{
         throw new Error("Method not implemented.");
     }
 
-    async getByEmail(email: string): Promise<User | null> {
+    async getByEmail(data: SignInUserDTO): Promise<any | null> {
+        const email=data.email;
         const user=await this.userRepository.getByEmail(email);
-        return user;
+
+        if(!user){
+            throw new NotFoundError(`User with email ${email} not found`);
+        }
+
+        const isMatched=bcrypt.compareSync(data.password, user.password);
+        if(!isMatched){
+            throw new UnauthorizedAccess("Invalid Password");
+        }
+
+        const jwt=JWTToken.generateJWTToken(data);
+        return {
+            user: user,
+            JWTToken: jwt
+        };
     }
 
 }

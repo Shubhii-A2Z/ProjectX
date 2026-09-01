@@ -19,5 +19,15 @@ export class UserController{
         });
     }
 
+    signinUser=async (req: Request, resp: Response) => {
+        const response=await this.userService.getByEmail(req.body);
+
+        return resp.status(StatusCodes.OK).json({
+            success: true,
+            message: "User Signed In Successfully",
+            data: response
+        });
+    }
+
 
 }

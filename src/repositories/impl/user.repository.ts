@@ -40,7 +40,8 @@ export class UserRepositoryImpl implements UserRepository{
             select:{
                 id: true,
                 username: true,
-                email: true
+                email: true,
+                password: true,
             }
         });
         return user;

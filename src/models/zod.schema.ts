@@ -11,6 +11,11 @@ export const createBookingSchema=z.object({
 
 export const createUserSchema=z.object({
     username: z.string({error: "Username is required"}).min(3, {message: "Username should be at least 3 characters long"}).max(255, {message: "Username should be at most 255 characters long"}),
-    email: z.string({error: "Email is required"}).email({message: "Invalid email format"}),
+    email: z.email({message: "Invalid email format"}),
+    password: z.string({error: "Password is required"}).min(6, {message: "Password should be at least 6 characters long"}).max(255, {message: "Password should be at most 255 characters long"})
+});
+
+export const signinUserSchema=z.object({
+    email: z.email({message: "Invalid email format"}),
     password: z.string({error: "Password is required"}).min(6, {message: "Password should be at least 6 characters long"}).max(255, {message: "Password should be at most 255 characters long"})
 });
