@@ -1,11 +1,12 @@
 import prisma from "@/prisma/client";
 import { WorkspaceRepository } from "../workspace.repository.interface";
 import { CreateWorkspaceDTO } from "@/dtos/CreateWorkspaceDTO";
+import { Role } from "@prisma/client";
 
 export class WorkspaceRepositoryImpl implements WorkspaceRepository{
 
     async getWorkspaceByName(workspaceName: string): Promise<any | null> {
-        const workspace=await prisma.workSpace.findUnique({
+        const workspace=await prisma.workSpace.findFirst({
             where:{
                 name: workspaceName
             }
@@ -22,7 +23,17 @@ export class WorkspaceRepositoryImpl implements WorkspaceRepository{
         return workspace;
     }
 
-    async addMemberToWorkspace(workspaceId: number, userId: number): Promise<any | null> {
+    async addMemberToWorkspace(workspaceId: number, userId: number, role: Role): Promise<any | null> {
+        // First updating the user's role to either USER or ADMIN
+        await prisma.user.update({
+            where:{
+                id: userId
+            },
+            data:{
+                role: role
+            }
+        });
+
         const workspace=await prisma.workSpace.update({
             where:{
                 id: workspaceId
@@ -33,6 +44,10 @@ export class WorkspaceRepositoryImpl implements WorkspaceRepository{
                         id: userId
                     }
                 }
+            },
+            include:{
+                members: true,
+                channel: true
             }
         });
         return workspace;
@@ -49,13 +64,30 @@ export class WorkspaceRepositoryImpl implements WorkspaceRepository{
                         name: channelName
                     }
                 }
+            },
+            include:{
+                members: true,
+                channel: true
             }
         });
         return workspace;
     }
 
-    async fetchAllWorkspaceByMemberId(): Promise<any | null> {
-        throw new Error("Method not implemented.");
+    async fetchAllWorkspaceByMemberId(userId: number): Promise<any | null> {
+        const workspaces=await prisma.workSpace.findMany({
+            where:{
+                members:{
+                    some:{
+                        id: userId
+                    }
+                }
+            },
+            include:{
+                members: true,
+                channel: true,
+            }
+        });
+        return workspaces;
     }
 
     async createWorkspace(data: CreateWorkspaceDTO, joinCode: string): Promise<any> {

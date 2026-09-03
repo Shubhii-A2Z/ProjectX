@@ -1,11 +1,11 @@
 model WorkSpace{
     id          Int     @id @default(autoincrement()) @map("_id")
-    name        String  @unique
+    name        String
     description String? @default("")
 
     members     User[]
 
-    joinCode    String
+    joinCode    String @unique
 
     channel     Channel[]
 }

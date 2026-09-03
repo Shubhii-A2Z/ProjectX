@@ -1,3 +1,6 @@
+import { CreateWorkspaceDTO } from "@/dtos/CreateWorkspaceDTO";
+
 export interface WorkspaceService{
-    createWorkspace(data: any): Promise<any>;
+    createWorkspace(data: CreateWorkspaceDTO, user: any): Promise<any>;
+    getWorkspaceUserIsMemberOf(user: any): Promise<any | null>;
 }

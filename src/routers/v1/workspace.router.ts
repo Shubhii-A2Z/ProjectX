@@ -14,6 +14,9 @@ const workspaceRepository: WorkspaceRepository=new WorkspaceRepositoryImpl();
 const workspaceService: WorkspaceService=new WorkspaceServiceImpl(workspaceRepository);
 const workspaceController: WorkspaceController=new WorkspaceController(workspaceService);
 
+// before creating the workspace: user should be authenticated and request body should be validated
 workspaceRouter.post('/', JWTAuth.validateToken, validateRequestBody(createWorkspaceSchema), workspaceController.createWorkspace);
+
+workspaceRouter.get('/', JWTAuth.validateToken, workspaceController.getWorkspaceUserIsMemberOf);
 
 export default workspaceRouter;

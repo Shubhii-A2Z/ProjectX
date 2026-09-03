@@ -10,12 +10,21 @@ export class WorkspaceController{
         this.workspaceService=workspaceService;
     }
 
-    async createWorkspace(req: Request, resp: Response){
-        const workspace=await this.workspaceService.createWorkspace(req.body);
+    createWorkspace=async (req: Request, resp: Response)=>{
+        const workspace=await this.workspaceService.createWorkspace(req.body, (req as any).user);
         return resp.status(StatusCodes.CREATED).json({
             success: true,
             message: "Workspace created successfully",
             data: workspace
+        });
+    }
+
+    getWorkspaceUserIsMemberOf=async (req: Request, resp: Response)=>{
+        const workSpaces=await this.workspaceService.getWorkspaceUserIsMemberOf((req as any).user);
+        return resp.status(StatusCodes.OK).json({
+            success: true,
+            message: "Fetched corresponding workspaces",
+            data: workSpaces
         });
     }
 

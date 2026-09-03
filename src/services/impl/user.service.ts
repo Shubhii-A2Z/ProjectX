@@ -56,7 +56,11 @@ export class UserServiceImpl implements UserService{
             throw new UnauthorizedAccess("Invalid Password");
         }
 
-        const jwt=JWTToken.generateJWTToken(data);
+        const jwt=JWTToken.generateJWTToken({
+            id: user.id,
+            data: data
+        });
+        
         return {
             user: user,
             JWTToken: jwt
