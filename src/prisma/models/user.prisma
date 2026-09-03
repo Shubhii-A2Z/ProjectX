@@ -5,6 +5,8 @@ model User{
     password    String
     avatar      String?
 
+    role        Role    @default(USER)
+
     sentMessageId   Int[]
     sentMessage     Message[]
 

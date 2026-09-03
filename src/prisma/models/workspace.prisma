@@ -6,8 +6,6 @@ model WorkSpace{
     membersId   Int[]
     members     User[]
 
-    role        Role
-
     joinCode    String
 
     channelId   Int[]
