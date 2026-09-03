@@ -4,6 +4,7 @@ import { WorkspaceRepository } from "@/repositories/workspace.repository.interfa
 import { WorkspaceService } from "../workspace.service.interface";
 import { CreateWorkspaceDTO } from '@/dtos/CreateWorkspaceDTO';
 import { WorkSpace } from '@prisma/client';
+import { NotFoundError } from '@/utils/errors/app.error';
 
 export class WorkspaceServiceImpl implements WorkspaceService{
     
@@ -28,6 +29,21 @@ export class WorkspaceServiceImpl implements WorkspaceService{
     async getWorkspaceUserIsMemberOf(user: any): Promise<WorkSpace[] | null>{
         const workSpace: WorkSpace[] | null=this.workspaceRepository.fetchAllWorkspaceByMemberId(user.id);
         return workSpace;
+    }
+
+    async getWorkspaceByJoinCode(joinCode: string): Promise<any | null> {
+        const workspace=await this.workspaceRepository.getWorkspaceByJoinCode(joinCode);
+        return workspace;
+    }
+
+    async addMemberToWorkspace(joinCode: string, user: any): Promise<any | null> {
+        const workSpace=await this.workspaceRepository.getWorkspaceByJoinCode(joinCode);
+        if(!workSpace){
+            throw new NotFoundError("Workspace not found with the provided join code!");
+        }
+        const response=await this.workspaceRepository.addMemberToWorkspace(workSpace.id, user.id, "USER");
+        return response;
+        
     }
 
     private generateJoinCode(length=6): string {

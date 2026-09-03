@@ -28,4 +28,23 @@ export class WorkspaceController{
         });
     }
 
+    getWorkspaceByJoinCode=async (req: Request, resp: Response)=>{
+        const workspace=await this.workspaceService.getWorkspaceByJoinCode(req.params.joinCode as string);
+        return resp.status(StatusCodes.OK).json({
+            success: true,
+            message: "Fetched workspace",
+            data: workspace
+        });
+    }
+
+    addMemberToWorkspace=async (req: Request, resp: Response)=>{
+        const workspace=await this.workspaceService.addMemberToWorkspace(req.params.joinCode as string, (req as any).user);
+        return resp.status(StatusCodes.OK).json({
+            success: true,
+            message: "Added member to workspace",
+            data: workspace
+        });
+    }
+        
+
 }

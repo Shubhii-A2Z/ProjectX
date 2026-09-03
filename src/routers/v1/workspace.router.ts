@@ -19,4 +19,8 @@ workspaceRouter.post('/', JWTAuth.validateToken, validateRequestBody(createWorks
 
 workspaceRouter.get('/', JWTAuth.validateToken, workspaceController.getWorkspaceUserIsMemberOf);
 
+workspaceRouter.get('/:joinCode', workspaceController.getWorkspaceByJoinCode);
+
+workspaceRouter.post('/:joinCode', JWTAuth.validateToken, workspaceController.addMemberToWorkspace);
+
 export default workspaceRouter;
