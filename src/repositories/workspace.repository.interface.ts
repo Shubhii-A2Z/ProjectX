@@ -4,4 +4,5 @@ export interface WorkspaceRepository{
     addMemberToWorkspace(workspaceId: number, userId: number): any;
     addChannelToWorkspace(workspaceId: number, channelName: string): any;
     fetchAllWorkspaceByMemberId(): any;
+    createWorkspace(data: any, joinCode: string): any;
 }

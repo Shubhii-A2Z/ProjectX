@@ -1,5 +1,6 @@
 import prisma from "@/prisma/client";
 import { WorkspaceRepository } from "../workspace.repository.interface";
+import { CreateWorkspaceDTO } from "@/dtos/CreateWorkspaceDTO";
 
 export class WorkspaceRepositoryImpl implements WorkspaceRepository{
 
@@ -27,8 +28,10 @@ export class WorkspaceRepositoryImpl implements WorkspaceRepository{
                 id: workspaceId
             },
             data:{
-                membersId: {
-                    push: userId
+                members:{
+                    connect:{
+                        id: userId
+                    }
                 }
             }
         });
@@ -53,6 +56,17 @@ export class WorkspaceRepositoryImpl implements WorkspaceRepository{
 
     async fetchAllWorkspaceByMemberId(): Promise<any | null> {
         throw new Error("Method not implemented.");
+    }
+
+    async createWorkspace(data: CreateWorkspaceDTO, joinCode: string): Promise<any> {
+        const workspace=await prisma.workSpace.create({
+            data:{
+                name: data.name,
+                description: data.description || null,
+                joinCode: joinCode,
+            }
+        });
+        return workspace;
     }
 
 }

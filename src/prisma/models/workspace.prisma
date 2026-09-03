@@ -3,11 +3,9 @@ model WorkSpace{
     name        String  @unique
     description String? @default("")
 
-    membersId   Int[]
     members     User[]
 
     joinCode    String
 
-    channelId   Int[]
     channel     Channel[]
 }
