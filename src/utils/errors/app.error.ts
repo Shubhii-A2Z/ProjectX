@@ -28,3 +28,9 @@ export class UnauthorizedAccess extends AppError{
         super(message, StatusCodes.UNAUTHORIZED);
     }
 }
+
+export class ConflictError extends AppError{
+    constructor(message: string){
+        super(message, StatusCodes.CONFLICT);
+    }
+}
