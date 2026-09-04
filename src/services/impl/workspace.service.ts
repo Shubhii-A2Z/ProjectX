@@ -4,7 +4,8 @@ import { WorkspaceRepository } from "@/repositories/workspace.repository.interfa
 import { WorkspaceService } from "../workspace.service.interface";
 import { CreateWorkspaceDTO } from '@/dtos/CreateWorkspaceDTO';
 import { Prisma, WorkSpace } from '@prisma/client';
-import { ConflictError, NotFoundError } from '@/utils/errors/app.error';
+import { BadRequestError, ConflictError, NotFoundError } from '@/utils/errors/app.error';
+import { UpdateWorkspaceDTO } from '@/dtos/UpdateWorkspaceDTO';
 
 export class WorkspaceServiceImpl implements WorkspaceService{
     
@@ -56,6 +57,14 @@ export class WorkspaceServiceImpl implements WorkspaceService{
             }
             throw error;
         }
+    }
+
+    async updateWorkspace(workspaceId: number, userId: number, data: UpdateWorkspaceDTO): Promise<any | null> {
+        const updatedWorkspace=await this.workspaceRepository.updateWorkspace(workspaceId, userId, data);
+        if(!updatedWorkspace){
+            throw new BadRequestError("Failed to update workspace")
+        }
+        return updatedWorkspace;
     }
 
     private generateJoinCode(length=6): string {

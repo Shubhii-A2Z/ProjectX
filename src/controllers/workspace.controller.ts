@@ -45,6 +45,17 @@ export class WorkspaceController{
             data: workspace
         });
     }
+
+    updateWorkspace=async (req: Request, resp: Response)=>{
+        const updatedWorkspace=await this.workspaceService.updateWorkspace(Number(req.params.workspaceId), (req as any).user.id, req.body);
+        return resp.status(StatusCodes.OK).json({
+            success: true,
+            message: "Updated workspace",
+            data: updatedWorkspace
+        });
+    }
+
+    
         
 
 }

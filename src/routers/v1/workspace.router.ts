@@ -1,7 +1,7 @@
 import { WorkspaceController } from '@/controllers/workspace.controller';
 import { JWTAuth } from '@/middlewares/auth.middleware';
 import { validateRequestBody } from '@/middlewares/validate.middleware';
-import { createWorkspaceSchema } from '@/models/zod.schema';
+import { createWorkspaceSchema, updateWorkspaceSchema } from '@/models/zod.schema';
 import { WorkspaceRepositoryImpl } from '@/repositories/impl/workspace.repository';
 import { WorkspaceRepository } from '@/repositories/workspace.repository.interface';
 import { WorkspaceServiceImpl } from '@/services/impl/workspace.service';
@@ -22,5 +22,7 @@ workspaceRouter.get('/', JWTAuth.validateToken, workspaceController.getWorkspace
 workspaceRouter.get('/:joinCode', workspaceController.getWorkspaceByJoinCode);
 
 workspaceRouter.post('/:joinCode', JWTAuth.validateToken, workspaceController.addMemberToWorkspace);
+
+workspaceRouter.put('/:workspaceId', JWTAuth.validateToken, validateRequestBody(updateWorkspaceSchema), workspaceController.updateWorkspace);
 
 export default workspaceRouter;

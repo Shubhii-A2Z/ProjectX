@@ -24,3 +24,8 @@ export const createWorkspaceSchema=z.object({
     name: z.string().min(1, {message: "Workspace name is required"}).max(255, {message: "Workspace name should be at most 255 characters long"}),
     description: z.string().max(500, {message: "Workspace description should be at most 500 characters long"}).optional()
 })
+
+export const updateWorkspaceSchema=z.object({
+    name: z.string().min(1, {message: "Workspace name is required"}).max(255, {message: "Workspace name should be at most 255 characters long"}).optional(),
+    description: z.string().max(500, {message: "Workspace description should be at most 500 characters long"}).optional()
+})

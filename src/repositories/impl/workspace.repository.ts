@@ -2,6 +2,8 @@ import prisma from "@/prisma/client";
 import { WorkspaceRepository } from "../workspace.repository.interface";
 import { CreateWorkspaceDTO } from "@/dtos/CreateWorkspaceDTO";
 import { Role } from "@prisma/client";
+import { UpdateWorkspaceDTO } from "@/dtos/UpdateWorkspaceDTO";
+import { NotFoundError, UnauthorizedAccess } from "@/utils/errors/app.error";
 
 export class WorkspaceRepositoryImpl implements WorkspaceRepository{
 
@@ -96,6 +98,38 @@ export class WorkspaceRepositoryImpl implements WorkspaceRepository{
             }
         });
         return workspace;
+    }
+
+    async updateWorkspace(workspaceId: number, userId: number, data: UpdateWorkspaceDTO): Promise<any | null> {
+        const workspace=await prisma.workSpace.findUnique({
+            where:{
+                id: workspaceId
+            }
+        });
+        if(!workspace) throw new NotFoundError("Workspace not found");
+
+        const isValidUser=await prisma.workspaceMember.findUnique({
+            where:{
+                userId_workspaceId:{
+                    workspaceId: workspaceId,
+                    userId: userId
+                }
+            },
+            select:{
+                role: true
+            }
+        });
+        if(!isValidUser || isValidUser.role!=="ADMIN") throw new UnauthorizedAccess("You are not authorized for this action");
+
+        const updatedWorkspace=await prisma.workSpace.update({
+            where:{
+                id: workspaceId
+            },
+            data:{
+                ...data
+            }
+        });
+        return updatedWorkspace;
     }
 
 }
