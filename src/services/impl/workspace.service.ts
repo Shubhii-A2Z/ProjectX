@@ -3,8 +3,8 @@ import crypto from 'node:crypto';
 import { WorkspaceRepository } from "@/repositories/workspace.repository.interface";
 import { WorkspaceService } from "../workspace.service.interface";
 import { CreateWorkspaceDTO } from '@/dtos/CreateWorkspaceDTO';
-import { WorkSpace } from '@prisma/client';
-import { NotFoundError } from '@/utils/errors/app.error';
+import { Prisma, WorkSpace } from '@prisma/client';
+import { ConflictError, NotFoundError } from '@/utils/errors/app.error';
 
 export class WorkspaceServiceImpl implements WorkspaceService{
     
@@ -28,22 +28,34 @@ export class WorkspaceServiceImpl implements WorkspaceService{
 
     async getWorkspaceUserIsMemberOf(user: any): Promise<WorkSpace[] | null>{
         const workSpace: WorkSpace[] | null=this.workspaceRepository.fetchAllWorkspaceByMemberId(user.id);
+        if(!workSpace){
+            throw new NotFoundError("No workspace found for the user");
+        }
         return workSpace;
     }
 
     async getWorkspaceByJoinCode(joinCode: string): Promise<any | null> {
         const workspace=await this.workspaceRepository.getWorkspaceByJoinCode(joinCode);
+        if(!workspace){
+            throw new NotFoundError("No workspace found for the provided join code");
+        }
         return workspace;
     }
 
     async addMemberToWorkspace(joinCode: string, user: any): Promise<any | null> {
-        const workSpace=await this.workspaceRepository.getWorkspaceByJoinCode(joinCode);
-        if(!workSpace){
-            throw new NotFoundError("Workspace not found with the provided join code!");
+        try {
+            const workSpace=await this.workspaceRepository.getWorkspaceByJoinCode(joinCode);
+            if(workSpace==null){
+                throw new NotFoundError("Workspace not found");
+            }
+            const response=await this.workspaceRepository.addMemberToWorkspace(workSpace.id, user.id, "USER");
+            return response;
+        } catch (error) {
+            if(error instanceof Prisma.PrismaClientKnownRequestError && error.code==="P2002"){
+                throw new ConflictError("User already member of workspace");
+            }
+            throw error;
         }
-        const response=await this.workspaceRepository.addMemberToWorkspace(workSpace.id, user.id, "USER");
-        return response;
-        
     }
 
     private generateJoinCode(length=6): string {

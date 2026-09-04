@@ -1,0 +1,13 @@
+model WorkspaceMember{
+    id Int @id @default(autoincrement())
+
+    userId Int
+    workspaceId Int
+
+    role Role @default(USER)
+
+    user User @relation(fields: [userId], references: [id])
+    workspace WorkSpace @relation(fields: [workspaceId], references: [id])
+
+    @@unique([userId, workspaceId])
+}

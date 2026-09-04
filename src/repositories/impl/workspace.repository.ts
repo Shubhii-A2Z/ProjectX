@@ -18,39 +18,36 @@ export class WorkspaceRepositoryImpl implements WorkspaceRepository{
         const workspace=await prisma.workSpace.findFirst({
             where:{
                 joinCode: joinCode
+            },
+            include:{
+                members: true,
+                channel: true,
             }
         });
         return workspace;
     }
 
     async addMemberToWorkspace(workspaceId: number, userId: number, role: Role): Promise<any | null> {
-        // First updating the user's role to either USER or ADMIN
-        await prisma.user.update({
+        const isExistingUser=await prisma.workspaceMember.findUnique({
             where:{
-                id: userId
-            },
+                userId_workspaceId:{
+                    userId: userId,
+                    workspaceId: workspaceId
+                }
+            }
+        });
+        if(isExistingUser){
+            return null;
+        }
+        
+        const memberShip=await prisma.workspaceMember.create({
             data:{
+                userId: userId,
+                workspaceId: workspaceId,
                 role: role
             }
         });
-
-        const workspace=await prisma.workSpace.update({
-            where:{
-                id: workspaceId
-            },
-            data:{
-                members:{
-                    connect:{
-                        id: userId
-                    }
-                }
-            },
-            include:{
-                members: true,
-                channel: true
-            }
-        });
-        return workspace;
+        return memberShip;
     }
 
     async addChannelToWorkspace(workspaceId: number, channelName: string): Promise<any | null> {

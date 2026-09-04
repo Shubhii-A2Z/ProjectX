@@ -1,11 +1,9 @@
 model WorkSpace{
-    id          Int     @id @default(autoincrement()) @map("_id")
+    id          Int             @id @default(autoincrement()) @map("_id")
     name        String
-    description String? @default("")
+    description String?         @default("")
+    joinCode    String          @unique
 
-    members     User[]
-
-    joinCode    String @unique
-
+    members     WorkspaceMember[]
     channel     Channel[]
 }
