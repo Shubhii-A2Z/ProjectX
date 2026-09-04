@@ -7,6 +7,8 @@ import { CreateUserDTO } from '@/dtos/CreateUserDTO';
 import { NotFoundError, UnauthorizedAccess } from '@/utils/errors/app.error';
 import { JWTToken } from '@/utils/common/auth.util';
 import { SignInUserDTO } from '@/dtos/SignInUserDTO';
+import { MailService } from '../mail/mail.service';
+import { SignupTemplate } from '../mail/templates/welcome.template';
 
 export class UserServiceImpl implements UserService{
     
@@ -30,7 +32,9 @@ export class UserServiceImpl implements UserService{
         const salt=bcrypt.genSaltSync(10);
         const hashedPassword=bcrypt.hashSync(data.password, salt);
         data.password=hashedPassword;
+
         const user: User | null =await this.userRepository.create(data);
+        MailService.sendMail(data.email, 'Welcome To ProjectX', SignupTemplate.generate(data.username));
         return user;
     }
 
