@@ -12,6 +12,8 @@ const app=express();
 
 app.use(express.json());
 
+// TODO(#1): Implement Rate Limiter via Redis for auth and other endpoints
+
 /**
  * Adding the error handler middleware: this will replace the default error handler middlware
  */
