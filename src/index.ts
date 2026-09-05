@@ -6,6 +6,7 @@ import logger from './config/logger.config';
 import apiRouter from './routers';
 import { Subscriber } from './subscribers/subscriber';
 import { MailQueueSubscriber } from './subscribers/impl/mail.queue.subscriber';
+import bullServerAdapter from './config/bull-board.config';
 
 const app=express();
 
@@ -17,6 +18,8 @@ app.use(express.json());
 app.use(genericErrorHandler);
 
 app.use('/api',apiRouter);
+
+app.use('/ui',bullServerAdapter.getRouter());
 
 app.listen(serverConfig.PORT,()=>{
     console.log(`Server started at PORT: ${serverConfig.PORT}`);

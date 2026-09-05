@@ -12,6 +12,7 @@
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
+    "@bull-board/express": "^9.8.0",
     "@prisma/adapter-neon": "^7.10.0",
     "@prisma/client": "^6.19.0",
     "bcrypt": "^6.0.0",
