@@ -7,12 +7,14 @@ import { CreateUserDTO } from '@/dtos/CreateUserDTO';
 import { NotFoundError, UnauthorizedAccess } from '@/utils/errors/app.error';
 import { JWTToken } from '@/utils/common/auth.util';
 import { SignInUserDTO } from '@/dtos/SignInUserDTO';
-import { MailService } from '../mail/mail.service';
+import { Publisher } from '@/publishers/publisher';
+import { MailQueuePublisher } from '@/publishers/impl/mail.queue.publisher';
 import { SignupTemplate } from '../mail/templates/welcome.template';
 
 export class UserServiceImpl implements UserService{
     
     private readonly userRepository: UserRepository;
+    private readonly publisher: Publisher=new MailQueuePublisher();
 
     constructor(userRepository: UserRepository){
         this.userRepository=userRepository;
@@ -34,7 +36,7 @@ export class UserServiceImpl implements UserService{
         data.password=hashedPassword;
 
         const user: User | null =await this.userRepository.create(data);
-        MailService.sendMail(data.email, 'Welcome To ProjectX', SignupTemplate.generate(data.username));
+        await this.publisher.addToQueue({to: data.email, subject: 'Welcome To ProjectX', body: SignupTemplate.generate(data.username)});
         return user;
     }
 

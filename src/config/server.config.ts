@@ -8,4 +8,6 @@ export default{
     AUTH_SECRET: process.env.AUTH_SECRET || 'DUMMY',
     MAIL_ID: process.env.MAIL_ID,
     APP_PASSWORD: process.env.APP_PASSWORD,
+    REDIS_HOST: process.env.REDIS_HOST,
+    REDIS_PORT: process.env.REDIS_PORT,
 }
