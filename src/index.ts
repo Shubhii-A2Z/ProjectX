@@ -7,10 +7,14 @@ import apiRouter from './routers';
 import { Subscriber } from './subscribers/subscriber';
 import { MailQueueSubscriber } from './subscribers/impl/mail.queue.subscriber';
 import bullServerAdapter from './config/bull-board.config';
+import cors from 'cors';
 
 const app=express();
 
 app.use(express.json());
+
+// Allowing all the requests to access our servers. We can change this later on
+app.use(cors());
 
 // TODO(#1): Implement Rate Limiter via Redis for auth and other endpoints
 
