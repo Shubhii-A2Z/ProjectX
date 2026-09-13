@@ -11,6 +11,13 @@ import cors from 'cors';
 import { createServer } from 'node:http';
 import { Server } from 'socket.io';
 
+// Temporary Imports
+import { MessageService } from './services/message.service.interface';
+import { MessageServiceImpl } from './services/impl/message.service';
+import { MessageRepositoryImpl } from './repositories/impl/message.repository';
+import { MessageRepository } from './repositories/message.repository.interface';
+import { MessageSocketController } from './controllers/message.socket.controller';
+
 const app=express();
 
 // creating a common server for both our express app and socket.io
@@ -38,10 +45,12 @@ app.use('/ui',bullServerAdapter.getRouter());
 // Logging whenever a new client is connected to our server
 io.on('connection',(socket)=>{
     console.log('A user connected: ',socket.id);
-    socket.on('messageFromClient', (message: string)=>{
-        console.log(`Message from client ${message}`);
-        io.emit('messageFromServer',`Hello Client: ${message}. Welcome to Project-X`);
-    });
+
+    const messageRepository: MessageRepository=new MessageRepositoryImpl();
+    const messageService: MessageService=new MessageServiceImpl(messageRepository);
+    const messageController: MessageSocketController=new MessageSocketController(messageService);
+    
+    messageController.register(socket);
 });
 
 // Now instead of app.listen, we are using server.listen because we want to use our http server with socket.io
