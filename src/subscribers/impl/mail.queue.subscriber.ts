@@ -24,7 +24,11 @@ export class MailQueueSubscriber implements Subscriber {
         );
 
         worker.on('failed',(job, error)=>{
-            logger.error('Job failed',job, error);
+            logger.error('Job failed',{
+                jobId: job?.id,
+                jobName: job?.name,
+                error: error.message,
+            });
         });
     }
 
