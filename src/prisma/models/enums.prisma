@@ -2,3 +2,8 @@ enum Role{
     USER
     ADMIN
 }
+
+enum Provider{
+    GOOGLE
+    GITHUB
+}

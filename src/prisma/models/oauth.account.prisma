@@ -1,0 +1,8 @@
+model OAuthAccount{
+    id              Int     @id @default(autoincrement()) @map("_id")
+    provider        Provider
+    providerAccountId String  @unique
+
+    userId          Int
+    user            User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+}

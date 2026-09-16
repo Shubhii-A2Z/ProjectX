@@ -7,4 +7,6 @@ model User{
 
     sentMessage  Message[]
     workspaces   WorkspaceMember[]
+
+    oauthAccounts OAuthAccount[]
 }
