@@ -1,6 +1,6 @@
 import { Provider } from "@prisma/client";
 
 export interface OAuthService{
-    getUserWithEmail(provider: Provider, email: string): Promise<any>;
+    handleGoogleAuth(userData: any): Promise<any>;
     linkUserWithOAuth(providerAccountId: string, provider: Provider, userId: number): Promise<any>;
 }

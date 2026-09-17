@@ -30,4 +30,16 @@ export class OAuthRepositoryImpl implements OAuthRepository{
         });
     }
 
+    async getByProviderAccountId(provider: Provider, providerAccountId: string): Promise<any> {
+        return await prisma.oAuthAccount.findUnique({
+            where:{
+                provider: provider,
+                providerAccountId: providerAccountId
+            },
+            select:{
+                user: true,
+            }
+        });
+    }
+
 }
