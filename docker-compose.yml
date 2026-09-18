@@ -8,3 +8,11 @@ services:
     ports:
       - "1025:1025" # SMTP server - point Nodemailer here
       - "8025:8025" # Web UI - open in browser to view emails
+
+  # Equivalent for: docker run -d --name redis-stack -p 6379:6379 -p 8001:8001 redis/redis-stack:latest
+  redisContainer:
+    image: redis/redis-stack:latest
+    container_name: redis-stack
+    ports:
+      - "6379:6379"
+      - "8001:8001"

@@ -10,6 +10,7 @@ import { SignInUserDTO } from '@/dtos/SignInUserDTO';
 import { Publisher } from '@/publishers/publisher';
 import { MailQueuePublisher } from '@/publishers/impl/mail.queue.publisher';
 import { SignupTemplate } from '../mail/templates/welcome.template';
+import { redLock } from '@/config/redis.config';
 
 export class UserServiceImpl implements UserService{
     
@@ -41,8 +42,14 @@ export class UserServiceImpl implements UserService{
     }
 
     async update(id: number, data: any): Promise<User | null> {
-        const user=await this.userRepository.update(id, data);
-        return user;
+        const lock=await redLock.acquire([`user:update:${id}`], 5000);
+        try{
+            const user=await this.userRepository.update(id, data);
+            return user;
+        }
+        finally{
+            lock.release();
+        }
     }
 
     async delete(_: number): Promise<User | null> {
