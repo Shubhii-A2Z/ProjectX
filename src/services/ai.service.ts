@@ -1,4 +1,7 @@
-import { AVAILABLE_MODELS, groq } from "@/config/groq.config";
+import {
+    AVAILABLE_MODELS,
+    groq
+} from "@/config/groq.config";
 
 export interface ChatMessageDTO {
     role: "user" | "assistant" | "system";
@@ -35,34 +38,74 @@ export class AIService {
 
     async streamChatCompletion(
         messages: ChatMessageDTO[],
-        model: string = "openai/gpt-oss-20b",
+        model: string = "core",
         onChunk: (chunk: string) => void
     ): Promise<void> {
 
-        const selectedModel =
-            AVAILABLE_MODELS.find((m) => m.id === model)?.id ||
-            "openai/gpt-oss-20b";
+        /*
+         * `model` is the RelayAI model ID coming
+         * from the frontend.
+         *
+         * Example:
+         *
+         * core
+         * deep
+         */
+
+        const selectedModel = AVAILABLE_MODELS.find(
+            (availableModel) =>
+                availableModel.id === model
+        );
+
+        if (!selectedModel) {
+            throw new Error(
+                `Invalid AI model selected: ${model}`
+            );
+        }
+
+        /*
+         * Convert the RelayAI model ID into
+         * the actual provider model.
+         *
+         * core
+         *   ↓
+         * openai/gpt-oss-20b
+         *
+         * deep
+         *   ↓
+         * openai/gpt-oss-120b
+         */
+
+        const providerModel =
+            selectedModel.providerModel;
 
         const relayMessages: ChatMessageDTO[] = [
             {
                 role: "system",
-                content: RELAY_AI_SYSTEM_PROMPT,
+                content: RELAY_AI_SYSTEM_PROMPT
             },
-            ...messages,
+            ...messages
         ];
 
-        const stream = await groq.chat.completions.create({
-            model: selectedModel,
-            messages: relayMessages.map((msg) => ({
-                role: msg.role,
-                content: msg.content,
-            })),
-            stream: true,
-            temperature: 0.6,
-        });
+        const stream =
+            await groq.chat.completions.create({
+                model: providerModel,
+
+                messages: relayMessages.map(
+                    (message) => ({
+                        role: message.role,
+                        content: message.content
+                    })
+                ),
+
+                stream: true,
+
+                temperature: 0.6
+            });
 
         for await (const chunk of stream) {
-            const content = chunk.choices[0]?.delta?.content || "";
+            const content =
+                chunk.choices[0]?.delta?.content || "";
 
             if (content) {
                 onChunk(content);

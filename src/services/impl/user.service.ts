@@ -42,13 +42,15 @@ export class UserServiceImpl implements UserService{
     }
 
     async update(id: number, data: any): Promise<User | null> {
+        // Acquire lock on userId
         const lock=await redLock.acquire([`user:update:${id}`], 5000);
         try{
             const user=await this.userRepository.update(id, data);
             return user;
         }
         finally{
-            lock.release();
+            // Release lock on userId
+            await lock.unlock();
         }
     }
 

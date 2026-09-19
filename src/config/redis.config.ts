@@ -6,7 +6,7 @@ export const redisClient=new Redis({
     port: 6379,
 });
 
-export const redLock=new Redlock([redisClient],{
+export const redLock=new Redlock([redisClient as any],{
         retryCount: -1, // retry forever until acquired
         retryDelay: 200, // ms between attempts
         retryJitter: 200
