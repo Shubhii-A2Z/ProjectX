@@ -1,4 +1,4 @@
-version: "3.8"
+name: relay-backend
 
 services:
   mailhog:
@@ -18,26 +18,26 @@ services:
       - "8001:8001"
 
   elasticsearch:
-    images: elasticsearch:8.17.1
+    image: elasticsearch:8.17.1
     container_name: elasticsearch
     restart: always
     ports:
       - 9200:9200
     volumes:
-      - elasticsearch_data:/usr/share/elasticsearch/elasticsearch_data
+      - elasticsearch_data:/usr/share/elasticsearch/data
     environment:
-      - xpack.security.enables=false
+      - xpack.security.enabled=false
       - discovery.type=single-node
       - ES_JAVA_OPTS=-Xms512m -Xmx512m
     networks:
       - elk-network
 
   kibana:
-    images: kibana:8.17.1
+    image: kibana:8.17.1
     container_name: kibana
     restart: always
     ports:
-      - 5601:5610
+      - 5601:5601
     environment:
       - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
     depends_on:
@@ -46,20 +46,21 @@ services:
       - elk-network
   
   logstash:
-    images: logstash:8.17.1
+    image: logstash:8.17.1
     container_name: logstash
     restart: always
     ports:
-      - 5044:5044
+      - 5033:5033
     environment:
       - LS_JAVA_OPTS=-Xms256m -Xmx256m
+      - xpack.monitoring.enabled=false
     depends_on:
       - elasticsearch
     networks:
       - elk-network
     volumes:
-      - ./logstash/:/logstash_dir
-    command: logstash -f /logstash_dir/pipeline/logstash.conf
+      - ./logstash/pipeline:/usr/share/logstash/pipeline:ro
+      - ./logs:/usr/share/logstash/logs:ro
 
 networks:
   elk-network:
