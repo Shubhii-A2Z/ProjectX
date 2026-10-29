@@ -16,3 +16,54 @@ services:
     ports:
       - "6379:6379"
       - "8001:8001"
+
+  elasticsearch:
+    images: elasticsearch:8.17.1
+    container_name: elasticsearch
+    restart: always
+    ports:
+      - 9200:9200
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/elasticsearch_data
+    environment:
+      - xpack.security.enables=false
+      - discovery.type=single-node
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+    networks:
+      - elk-network
+
+  kibana:
+    images: kibana:8.17.1
+    container_name: kibana
+    restart: always
+    ports:
+      - 5601:5610
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    depends_on:
+      - elasticsearch
+    networks:
+      - elk-network
+  
+  logstash:
+    images: logstash:8.17.1
+    container_name: logstash
+    restart: always
+    ports:
+      - 5044:5044
+    environment:
+      - LS_JAVA_OPTS=-Xms256m -Xmx256m
+    depends_on:
+      - elasticsearch
+    networks:
+      - elk-network
+    volumes:
+      - ./logstash/:/logstash_dir
+    command: logstash -f /logstash_dir/pipeline/logstash.conf
+
+networks:
+  elk-network:
+    driver: bridge
+
+volumes:
+  elasticsearch_data: {}
