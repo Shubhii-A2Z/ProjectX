@@ -79,7 +79,7 @@ export class KafkaListenerContainerFactory {
 
     await this.consumer.run({
       partitionsConsumedConcurrently: this.concurrency, // setConcurrency(3)
-      eachMessage: async ({ topic, partition, message }) => {
+      eachMessage: async ({ message }) => {
         const key = message.key ? message.key.toString() : null;
         const rawValue = message.value ? message.value.toString() : null;
         

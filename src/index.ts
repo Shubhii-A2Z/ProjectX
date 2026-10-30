@@ -1,3 +1,4 @@
+import './instrumentation';
 import express from 'express';
 
 import { genericErrorHandler } from './middlewares/error.middleware';
@@ -10,6 +11,7 @@ import bullServerAdapter from './config/bull-board.config';
 import cors from 'cors';
 import { createServer } from 'node:http';
 import { Server } from 'socket.io';
+import actuator from 'express-actuator';
 
 // Temporary Imports
 import { MessageService } from './services/message.service.interface';
@@ -19,6 +21,9 @@ import { MessageRepository } from './repositories/message.repository.interface';
 import { MessageSocketController } from './controllers/message.socket.controller';
 
 const app=express();
+
+// use actuator middleware for health monitoring endpoints
+app.use(actuator({basePath: "/actuator", customEndpoints: []}))
 
 // creating a common server for both our express app and socket.io
 const server=createServer(app);

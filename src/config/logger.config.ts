@@ -1,4 +1,5 @@
 import winston from 'winston';
+import { OpenTelemetryTransportV3 } from '@opentelemetry/winston-transport';
 import DailyRotateFile from 'winston-daily-rotate-file';
 
 const { combine, timestamp, printf, colorize, errors, json } = winston.format;
@@ -6,7 +7,7 @@ const { combine, timestamp, printf, colorize, errors, json } = winston.format;
 const NODE_ENV = process.env.NODE_ENV || 'development';
 const IS_PROD = NODE_ENV === 'production';
 const LOG_LEVEL = process.env.LOG_LEVEL || (IS_PROD ? 'info' : 'debug');
-const SERVICE_NAME = process.env.SERVICE_NAME || 'backend-service';
+const SERVICE_NAME = process.env.SERVICE_NAME || 'relay-backend';
 
 // 1. Clean console format for local development
 const consoleFormat = combine(
@@ -51,6 +52,9 @@ const logger = winston.createLogger({
             format: consoleFormat,
             silent: NODE_ENV === 'test',
         }),
+
+        // OpenTelemetry Transport -> forwards logs to OTLP collector & Loki
+        new OpenTelemetryTransportV3(),
 
         // File outputs split by severity level
         createRotateTransport('info'),  // captures info, warn, error
