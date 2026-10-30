@@ -1,4 +1,3 @@
-import logger from "@/config/logger.config";
 import { UserService } from "@/services/user.service.interface";
 import { Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
@@ -22,8 +21,6 @@ export class UserController{
 
     signinUser=async (req: Request, resp: Response) => {
         const response=await this.userService.getByEmail(req.body);
-
-        logger.error(`User ${response.user.username} signed-in successfully`)
 
         return resp.status(StatusCodes.OK).json({
             success: true,
