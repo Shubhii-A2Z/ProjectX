@@ -1,7 +1,7 @@
 import nodemailer from "nodemailer";
 import serverConfig from "./server.config";
 
-const transporter = serverConfig.NODE_ENV=="DEV"
+const transporter = serverConfig.NODE_ENV=="development"
 ? nodemailer.createTransport({
     host: process.env.SMTP_HOST || "localhost",
     port: Number(process.env.SMTP_PORT) || 1025,
